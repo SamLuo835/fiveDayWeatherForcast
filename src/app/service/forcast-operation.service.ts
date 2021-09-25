@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { IForecastResponse, IForcastItem, IShowingData, IForcastDisplay } from '../model/forcast-models';
+import { IForecastResponse, IForcastItem, IForcastDisplayingData } from '../model/forcast-models';
 
 
 
@@ -10,30 +10,39 @@ export class ForcastOperationService {
   constructor() { }
 
   getDayChunk(data: IForecastResponse): IForcastItem[][] {
-    // api data is returned in a format of every 3 hours gap , so 8 IForcastItems for one day
-    // but the response for first day is missing 00:00, hence only 7 IForcastItems for the first day.
-    // Total of fix 39 IForcastItems (5 days) from response
     let dateChunk: IForcastItem[][] = [];
+    let previousDay: number;
+    let indexToSlice: number = 1;
     if (data.list.length) {
-      data.list.forEach((_item, index) => {
-        if ((index + 2) % 8 === 0) {
-          if (index === 6) {
-            dateChunk.push(data.list.slice((index + 2 - 8), index + 1) as IForcastItem[])
-          } else {
-            dateChunk.push(data.list.slice((index + 2 - 9), index + 1) as IForcastItem[])
-          }
+      data.list.forEach((item, index) => {
+        const dayOfMonth = new Date(item.dt * 1000).getDate();
+        if(index === 0) previousDay = dayOfMonth
+        else if(previousDay !== dayOfMonth) {
+          // push to chunk as an array of same day forcast items
+          dateChunk.push(data.list.slice((index - indexToSlice), index) as IForcastItem[])
+          previousDay = dayOfMonth
+          indexToSlice = 1
+        } else {
+          indexToSlice += 1;
+        }
+        if (index === data.list.length - 1) {
+          // handle the last few forcast items, push them as the last day array to datechunk 
+          dateChunk.push(data.list.slice((index - indexToSlice + 1), index +1) as IForcastItem[])
         }
       })
     }
+    console.log('before ',dateChunk)
+    if (dateChunk.length === 6) {
+      if(dateChunk[0].length >= dateChunk[5].length) dateChunk.pop();
+      else dateChunk.shift();
+    }
+    console.log('after', dateChunk)
     return dateChunk
   }
 
   // combine show min , max, mean together
-  getMinMaxMean(chunk: IForcastItem[][]): IForcastDisplay{
-    // reset first
-    const meanTemp: IShowingData[] = [];
-    const maxTemp: IShowingData[] = [];
-    const minimumTemp: IShowingData[] = [];
+  getMinMaxMean(chunk: IForcastItem[][]): IForcastDisplayingData[]{
+    const data: IForcastDisplayingData[] = []
     if (chunk.length) {
       chunk.forEach(dayItems => {
         const min = this.getMinForOneDay(dayItems);
@@ -41,12 +50,10 @@ export class ForcastOperationService {
         const mean = this.getMeanForOneDay(dayItems);
         // pick any unix time from the current loop dayItems since we dont 
         // care about displaying the hour/ minute
-        minimumTemp.push({ temp: min, unix_time: dayItems[0].dt });
-        maxTemp.push({ temp: max, unix_time: dayItems[0].dt });
-        meanTemp.push({ temp: mean, unix_time: dayItems[0].dt })
+        data.push({unix_time: dayItems[0].dt, max, min, mean});
       })
     }
-    return {max: maxTemp, min: minimumTemp, mean: meanTemp }
+    return data
   }
 
   getMinForOneDay(data: IForcastItem[]): number {

@@ -21,16 +21,8 @@ export interface IForcastItem {
   }
 }
 
-export interface IShowingData {
-  temp: number,
-  unix_time: number,
-}
-
-export interface IForcastDisplay {
-  city?: ICity,
-  max?: IShowingData[],
-  min?: IShowingData[],
-  mean?: IShowingData[],
+export interface IForcastDisplayingData {
+  min: number, max: number, mean: number, unix_time: number
 }
 
 export enum EUnitType {

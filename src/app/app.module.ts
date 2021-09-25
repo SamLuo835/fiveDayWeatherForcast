@@ -14,13 +14,13 @@ import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzSelectModule } from 'ng-zorro-antd/select';
-import { TransformTempPipe } from './pipes/util-pipe.pipe';
+import { TransformUnitPipe } from './pipes/util-pipe.pipe';
 
 @NgModule({
   declarations: [
     AppComponent,
     DisplayForecastComponent,
-    TransformTempPipe,
+    TransformUnitPipe,
   ],
   imports: [
     BrowserModule,

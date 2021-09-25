@@ -1,24 +1,17 @@
 
 <h1 style="text-align: center;">Five Days Weather Forcast </h1>
-
 <div class="input_group">
-    <nz-input-group nzSearch nzSize="large" [nzAddOnAfter]="suffixButton">
-        <input type="text" [(ngModel)]="cityToSearch" nz-input placeholder="input search text" />
+    <nz-input-group nzSearch nzSize="large" [nzAddOnAfter]="suffixButton" [nzAddOnBefore]="selectUnit">
+        <input type="text" [(ngModel)]="cityToSearch" nz-input placeholder="input city name" />
     </nz-input-group>
     <ng-template #suffixButton>
         <button nz-button nzType="primary" (click)="onSearch()" nzSize="large" nzSearch>Search</button>
     </ng-template>
-
-    <div>
-        <nz-select (ngModelChange)="onSelectChange($event)" style="width: 200px;" [(ngModel)]="unit"  nzPlaceHolder="Choose display unit">
-            <nz-option [nzValue]="unitType.METRIC" nzLabel="Celsius"></nz-option>
-            <nz-option [nzValue]="unitType.IMPERIAL" nzLabel="Fahrenheit"></nz-option>
+    <ng-template #selectUnit>
+        <nz-select  [(ngModel)]="unit"  nzPlaceHolder="Choose display unit">
+            <nz-option [nzValue]="unitType.METRIC" nzLabel="Unit: °C"></nz-option>
+            <nz-option [nzValue]="unitType.IMPERIAL" nzLabel="Unit: °F"></nz-option>
         </nz-select>
-    </div>
+    </ng-template>
 </div>
-
-
-
-
-
 <app-display-forecast [unitSubject]="unitSubject$" [fetchingDataSubject]="fetchingData$"></app-display-forecast>

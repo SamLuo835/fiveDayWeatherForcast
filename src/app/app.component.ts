@@ -21,9 +21,10 @@ export class AppComponent implements OnInit{
   cityToSearch: string = ''
   fetchingData$ = new Subject<boolean>();
   unit: EUnitType = EUnitType.IMPERIAL;
-  unitSubject$ = new BehaviorSubject<EUnitType>(this.unit);
+  unitSubject$ = new BehaviorSubject<EUnitType>(this.unit)
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+  }
 
   async onSearch() {
     if (!this.cityToSearch) {
@@ -36,18 +37,15 @@ export class AppComponent implements OnInit{
     this.weatherForcastService.getFiveDaysForcast(this.cityToSearch, this.unit).subscribe(res => {
       const chunk = this.forcastOperation.getDayChunk(res);
       const result = this.forcastOperation.getMinMaxMean(chunk);
-      result.city = res.city;
       this.forcastData._setData(result);
+
+      // emit unit changed to display the correct unit in display child component
+      this.unitSubject$.next(this.unit)
       this.fetchingData$.next(false)
     }, error => {
       this.fetchingData$.next(false)
       console.log(error);
       this.msg.error(error.error.message)
     })
-  }
-
-  onSelectChange($event: EUnitType ) {
-    console.log($event);
-    this.unitSubject$.next($event);
   }
 }

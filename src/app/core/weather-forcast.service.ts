@@ -4,7 +4,7 @@ import { IForecastResponse } from '../model/forcast-models';
 import { BaseService } from './base.service';
 
 
-const GET_FIVE_DAYS_FORCAST_PATH = `/forecast?q={city}&appid=${environment.weather_api_key}&cnt=39&units={unit}`
+const GET_FIVE_DAYS_FORCAST_PATH = `/forecast?q={city}&appid=${environment.weather_api_key}&units={unit}`
 
 @Injectable({
   providedIn: 'root'

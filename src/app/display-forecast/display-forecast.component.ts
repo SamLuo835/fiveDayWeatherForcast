@@ -1,6 +1,6 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { BehaviorSubject, Subject } from 'rxjs';
-import { EUnitType, ICity, IShowingData } from '../model/forcast-models';
+import { EUnitType, ICity, IForcastDisplayingData } from '../model/forcast-models';
 import { ForcastDataService } from '../service/forcast-data.service';
 import { takeUntil } from 'rxjs/operators';
 
@@ -16,12 +16,10 @@ export class DisplayForecastComponent implements OnInit, OnDestroy {
   unitType = EUnitType
   @Input() fetchingDataSubject!: Subject<boolean>;
   @Input() unitSubject!: BehaviorSubject<EUnitType>;
-  cityData!: ICity;
-  max!: IShowingData[];
-  min!: IShowingData[];
-  mean!: IShowingData[];
 
-  destroyed$ = new Subject()
+  displayDataList!: IForcastDisplayingData[];
+
+  destroyed$ = new Subject();
 
   ngOnDestroy(): void {
     this.destroyed$.next();
@@ -29,12 +27,9 @@ export class DisplayForecastComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.forcast.displayData$.pipe(takeUntil(this.destroyed$)).subscribe(data => {
-      if (data.city && data.max && data.min && data.mean) {
-        this.cityData = data.city
-        this.max = data.max;
-        this.min = data.min;
-        this.mean = data.mean;
+    this.forcast.displayData$.pipe(takeUntil(this.destroyed$)).subscribe(result => {
+      if (result.length) {
+        this.displayDataList = result;
       }
     })
   }
